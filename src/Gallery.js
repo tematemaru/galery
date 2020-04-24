@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import images from './hotGirls';
 
 import BgPlane from './BgPlane';
+import GradietnHelper from './GradietnHelper';
 
 import './Gallery.css';
 
@@ -14,7 +15,7 @@ export default class Gallery extends React.PureComponent {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector3();
     this.textures = [];
-    this.radius = 10;
+    this.radius = 5;
     this.point = new THREE.Vector3();
   }
   componentDidMount() {
@@ -41,7 +42,8 @@ export default class Gallery extends React.PureComponent {
     this.scene = new THREE.Scene();
 
     this.Plane = new BgPlane(this.textures);
-
+    this.GradietnHelper = new GradietnHelper(2.5);
+    this.scene.add(this.GradietnHelper.getCard());
     this.scene.add(this.Plane.getPlane());
     
  
@@ -66,7 +68,9 @@ export default class Gallery extends React.PureComponent {
       duration: 1,
       value: 5,
       onUpdate: () => {
-        this.Plane.setPos(this.point);
+        this.camera.position.x *= this.mouse.x;
+        this.camera.position.y *= this.mouse.y;
+        // this.Plane.setPos(this.point);
         this.Plane.getCards().forEach(c => {
           const dist = this.point.distanceTo(c.getCenterCoord());
           const z = (THREE.MathUtils.clamp(this.radius / dist, 0.1, 10));
@@ -85,7 +89,8 @@ export default class Gallery extends React.PureComponent {
       this.point = intersects[i].point;
       
 		  // intersects[i].object.material.color.set( 0xff0000 );
-	  }
+    }
+    this.GradietnHelper.setPosition(this.point)
   }
 
   render() {

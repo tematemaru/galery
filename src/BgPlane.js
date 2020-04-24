@@ -27,6 +27,14 @@ export default class BgPlane {
     this.group.position.y = -y;
   }
 
+  setPositions = () => {
+    for (let i = 0; i < 40; i++) {
+      for (let j = 0; j < 20; j++) {
+      
+      } 
+    }
+  }
+
   createCards = () => { 
     this.textures.forEach(t => {
       const c = new ImageCard(t, {
