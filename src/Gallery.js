@@ -15,7 +15,7 @@ export default class Gallery extends React.PureComponent {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector3();
     this.textures = [];
-    this.radius = 6;
+    this.radius = 4;
     this.point = new THREE.Vector3();
   }
   componentDidMount() {
@@ -62,6 +62,7 @@ export default class Gallery extends React.PureComponent {
   }
 
   onMouseMove = (event) => {
+    if (!this.Plane.isAnimationEnd) return;
     gsap.to(this.mouse, {
       x: (event.clientX / window.innerWidth) * 2 - 1,
       y: -( event.clientY / window.innerHeight ) * 2 + 1,
@@ -75,7 +76,7 @@ export default class Gallery extends React.PureComponent {
     this.Plane.group.position.multiply(this.mouse) //setPos(this.Plane.plane.position);
     this.Plane.getCards().forEach(c => {
       const dist = this.point.distanceTo(c.getCenterCoord());
-      const z = (THREE.MathUtils.clamp(this.radius / dist * 5, c.z, 10));
+      const z = (THREE.MathUtils.clamp(this.radius / dist * 10, c.z, 20));
       c.setZpos(z);
     })
     this.raycaster.setFromCamera(this.mouse, this.camera);

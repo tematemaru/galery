@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
 import ImageCard from './ImageCard';
 // import { Vector3 } from 'three';
 
@@ -12,23 +13,32 @@ export default class BgPlane {
     this.plane.position.z = -1;
     this.group = new THREE.Group();
     this.group.add(this.plane);
+    this.positions = [];
+    this.setInitPositions();
     this.createCards();
+    this.initAnimation();
   }
 
-  getPlane = () => {
-    return this.group;
+  initAnimation = () => {
+    const finPos = this.generateShafflePositions();
+    for (let i = 0; i < this.positions.length; i++) {
+      gsap.to(this.positions[i], {
+        x: finPos[i].x,
+        y: finPos[i].y,
+        duration: 1,
+        delay: i * 0.01,
+        onUpdate: () => {
+          this.cards[i].setXpos(this.positions[i].x);
+          this.cards[i].setYpos(this.positions[i].y);
+        },
+        onComplete: () => {
+          this.isAnimationEnd = true;
+        }
+      });
+    }
   }
 
-  getCards = () => {
-    return this.cards;
-  }
-
-  setPos =({ x, y }) => {
-    this.group.position.x = -x;
-    this.group.position.y = -y;
-  }
-
-  generatePositions = () => {
+  generateShafflePositions = () => {
     const imgPerStrip = 6;
     const imgPerRow = 6;
     const positions = [];
@@ -39,22 +49,48 @@ export default class BgPlane {
       for (let j = 0; j < imgPerRow; j++) {
         const x = (j) * w - 40 + 6.5;
         const y = i * h - 20 + 2.5;
-        positions.push({ x, y });
+        positions.push({
+          x: THREE.MathUtils.randFloat(x - 5, x + 5),
+          y: THREE.MathUtils.randFloat(y - 3, y + 3)
+        });
       } 
     }
     return positions;
   }
 
+  setInitPositions = () => {
+    const imgPerStrip = 6;
+    const imgPerRow = 6;
+    for (let i = 0; i < imgPerStrip; i++) {
+      for (let j = 0; j < imgPerRow; j++) {
+        this.positions.push({ x: 0, y: 0 });
+      } 
+    }
+  }
+
+  getPlane = () => {
+    return this.group;
+  }
+
+  getCards = () => {
+    return this.cards;
+  }
+
+  setPos = ({ x, y }) => {
+    this.group.position.x = -x;
+    this.group.position.y = -y;
+  }
+
   createCards = () => {
-    const positions = this.generatePositions();
+    const positions = this.positions;
     this.textures.forEach((t, i) => {
       const pos = positions[i]
       const c = new ImageCard(t, {
         width: THREE.MathUtils.randFloat(4, 10),
         height: THREE.MathUtils.randFloat(4, 10),
-        x: THREE.MathUtils.randFloat(pos.x - 5, pos.x + 5),
-        y: THREE.MathUtils.randFloat(pos.y - 3, pos.y + 3),
-        z: THREE.MathUtils.randFloat(0.1, 1),
+        x: pos.x,
+        y: pos.y,
+        z: (this.textures.length - i) / this.textures.length,
       })
       this.group.add(c.getCard());
       // this.group.add(c.getPlane());

@@ -4,8 +4,6 @@ import gsap from 'gsap';
 export default class ImageCard {
   constructor(texture, params) {
     this.planeGeometry = new THREE.PlaneGeometry(13, 5, 1);
-    this.color = this.getRandomColor();
-    console.log(this.color);
     
     this.planeMaterial = new THREE.MeshBasicMaterial({ color: this.color });
     this.plane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
@@ -99,6 +97,14 @@ export default class ImageCard {
 
   setZpos = (z) => {
     this.card.position.z = z;
+  }
+
+  setXpos = (x) => {
+    this.card.position.x = x;
+  }
+
+  setYpos = (y) => {
+    this.card.position.y = y;
   }
 
   rollingCard = (duration = 5, pos) => {
