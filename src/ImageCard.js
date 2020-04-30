@@ -3,6 +3,12 @@ import gsap from 'gsap';
 
 export default class ImageCard {
   constructor(texture, params) {
+    this.planeGeometry = new THREE.PlaneGeometry(13, 5, 1);
+    this.color = this.getRandomColor();
+    console.log(this.color);
+    
+    this.planeMaterial = new THREE.MeshBasicMaterial({ color: this.color });
+    this.plane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
     this.vertexSrc = document.getElementById('shader-vs').innerText;
     this.fragmentSrc = document.getElementById('shader-fs').innerText;
     this.texture = texture;
@@ -16,6 +22,19 @@ export default class ImageCard {
 
   getCenterCoord = () => {
     return this.card.position;
+  }
+
+  getPlane = () => {
+    return this.plane;
+  }
+
+  getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '0x';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return Number(color);
   }
 
   getUvRate = (image, width, height) => {
@@ -69,6 +88,9 @@ export default class ImageCard {
     this.card.position.x = this.x;
     this.card.position.y = this.y;
     this.card.position.z = this.z;
+    this.plane.position.x = this.x;
+    this.plane.position.y = this.y;
+    this.plane.position.z = 1;
   }
 
   getCard = () => {

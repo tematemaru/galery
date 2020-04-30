@@ -15,7 +15,7 @@ export default class Gallery extends React.PureComponent {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector3();
     this.textures = [];
-    this.radius = 5;
+    this.radius = 6;
     this.point = new THREE.Vector3();
   }
   componentDidMount() {
@@ -38,12 +38,12 @@ export default class Gallery extends React.PureComponent {
 
   initScane = () => {
     this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
-    this.camera.position.z = 10;
+    this.camera.position.z = 25;
     this.scene = new THREE.Scene();
 
     this.Plane = new BgPlane(this.textures);
     this.GradietnHelper = new GradietnHelper(2.5);
-    this.scene.add(this.GradietnHelper.getCard());
+    // this.scene.add(this.GradietnHelper.getCard());
     this.scene.add(this.Plane.getPlane());
     
  
@@ -67,30 +67,27 @@ export default class Gallery extends React.PureComponent {
       y: -( event.clientY / window.innerHeight ) * 2 + 1,
       duration: 1,
       value: 5,
-      onUpdate: () => {
-        this.camera.position.x *= this.mouse.x;
-        this.camera.position.y *= this.mouse.y;
-        // this.Plane.setPos(this.point);
-        this.Plane.getCards().forEach(c => {
-          const dist = this.point.distanceTo(c.getCenterCoord());
-          const z = (THREE.MathUtils.clamp(this.radius / dist, 0.1, 10));
-          c.setZpos(z);
-        })
-      }
     });
   }
 
   animate = () => {
     requestAnimationFrame( this.animate );
+    this.Plane.group.position.multiply(this.mouse) //setPos(this.Plane.plane.position);
+    this.Plane.getCards().forEach(c => {
+      const dist = this.point.distanceTo(c.getCenterCoord());
+      const z = (THREE.MathUtils.clamp(this.radius / dist * 5, c.z, 10));
+      c.setZpos(z);
+    })
     this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.camera.position.x = this.mouse.x * 5;
+    this.camera.position.y = this.mouse.y * 5;
     this.renderer.render(this.scene,this.camera );
     var intersects = this.raycaster.intersectObjects([this.Plane.plane]);
+    
+    this.GradietnHelper.setPosition(this.point)
 	  for ( let i = 0; i < intersects.length; i++ ) {
       this.point = intersects[i].point;
-      
-		  // intersects[i].object.material.color.set( 0xff0000 );
     }
-    this.GradietnHelper.setPosition(this.point)
   }
 
   render() {
